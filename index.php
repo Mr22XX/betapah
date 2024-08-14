@@ -1,10 +1,61 @@
 <?php
 include "conn.php";
 
+function upload(){
+
+  $namaFile = $_FILES['gambar']['name'];
+  $ukuranFile = $_FILES['gambar']['size'];
+  $error = $_FILES['gambar']['error'];
+  $tmpName = $_FILES['gambar']['tmp_name'];
+  // cek ekstensi gambar
+  $ekstensiGambarValid = ['jpeg', 'png', 'jpg'];
+  $ekstensiGambar = explode('.' , $namaFile);
+  $ekstensiGambar = strtolower(end($ekstensiGambar));
+
+  if(!in_array($ekstensiGambar, $ekstensiGambarValid)){
+    echo "<script>
+    alert('Yang anda upload tidak sesuai')
+    window.location.href = 'index.php';
+    </script>";
+    return false;
+  }
+
+  if($ukuranFile > 2000000){
+    echo "<script>
+    alert('File yang anda upload terlalu besar')
+    window.location.href = 'index.php';
+    </script>";
+    return false;
+  }
+
+  if($error === 4){
+    echo "<script>
+    alert('Pilih gambar terlebih dahulu')
+    window.location.href = 'index.php';
+    </script>";
+    return false;
+  }
+
+
+  $namaFileBaru = uniqid();
+  $namaFileBaru .= '.';
+  $namaFileBaru .= $ekstensiGambar;
+
+  move_uploaded_file($tmpName, $namaFileBaru);
+  return $namaFileBaru;
+  
+  
+}
+
 if(isset($_POST['laporkan'])){
 
   $nama = htmlspecialchars($_POST['nama']);
-  $gambar = htmlspecialchars($_POST['gambar']);
+  
+  $gambar = upload();
+  if(!$gambar){
+    return false;
+  }
+
   $desk = htmlspecialchars($_POST['desk']);
   $lokasi = htmlspecialchars($_POST['lokasi']);
   $tanggal = htmlspecialchars($_POST['tanggal']);
@@ -53,7 +104,6 @@ if(isset($_GET['hal'])){
 }
 
 $vnama = "";
-$vgambar = "";
 $vtanggal = "";
 $vlokasi = "";
 $vdesk = "";
@@ -66,7 +116,6 @@ if(isset($_GET['hal'])){
 
     if($data){
       $vnama = $data['nama'];
-      $vgambar = $data['gambar'];
       $vtanggal = $data['tanggal'];
       $vlokasi = $data['lokasi'];
       $vdesk = $data['desk'];
@@ -76,10 +125,17 @@ if(isset($_GET['hal'])){
 
 if(isset($_POST['simpan'])){
   if($_GET['hal'] == "edit"){
+
+    
+    $gambar = upload();
+    if(!$gambar){
+      return false;
+    }
+
     $query = "UPDATE datalaporan  SET 
     
       nama = '$_POST[nama]',
-      gambar = '$_POST[gambar]',
+      gambar = '$gambar',
       tanggal = '$_POST[tanggal]',
       lokasi = '$_POST[lokasi]',
       desk = '$_POST[desk]'
@@ -231,7 +287,7 @@ if(isset($_POST['simpan'])){
                 </button>
             </div>
             <!-- Modal body -->
-            <form class="p-4 md:p-5" method="post">
+            <form class="p-4 md:p-5" method="post" enctype="multipart/form-data">
                 <div class="grid gap-4 mb-4 grid-cols-2">
                     <div class="col-span-2">
                         <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama</label>
@@ -239,7 +295,7 @@ if(isset($_POST['simpan'])){
                     </div>
                     <div class="col-span-2">
                         <label for="gambar" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Gambar</label>
-                        <input type="text" name="gambar" id="gambar" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Masukkan Foto" required="">
+                        <input type="file" name="gambar" id="gambar" class="bg-gray-50 border border-gray-300 text-gray-900 w-full" placeholder="Masukkan Foto" >
                     </div>
                     <div class="col-span-2 sm:col-span-1">
                         <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tanggal</label>
@@ -282,7 +338,8 @@ if(isset($_POST['simpan'])){
                 </button>
             </div>
             <!-- Modal body -->
-            <form class="p-4 md:p-5" method="post">
+            <form class="p-4 md:p-5" method="post" enctype="multipart/form-data">
+
                 <div class="grid gap-4 mb-4 grid-cols-2">
                     <div class="col-span-2">
                         <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama</label>
@@ -290,8 +347,8 @@ if(isset($_POST['simpan'])){
                     </div>
                     <div class="col-span-2">
                         <label for="gambar" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Gambar</label>
-                        <input type="text" name="gambar" value="<?=$vgambar?>" id="gambar" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Masukkan Foto" required="">
-                    </div>
+                        <input type="file" name="gambar" id="gambar" class="bg-gray-50 border border-gray-300 text-gray-900 w-full" placeholder="Masukkan Foto" >
+                      </div>
                     <div class="col-span-2 sm:col-span-1">
                         <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tanggal</label>
                         <input type="date" name="tanggal" id="price" value="<?=$vtanggal?>" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="$2999" required="">
