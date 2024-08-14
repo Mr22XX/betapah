@@ -52,6 +52,58 @@ if(isset($_GET['hal'])){
   }
 }
 
+$vnama = "";
+$vgambar = "";
+$vtanggal = "";
+$vlokasi = "";
+$vdesk = "";
+
+if(isset($_GET['hal'])){
+  if($_GET['hal'] == "edit"){
+    $query = "SELECT * FROM datalaporan WHERE id = '$_GET[id]'";
+    $result = mysqli_query($conn, $query);
+    $data = mysqli_fetch_assoc($result);
+
+    if($data){
+      $vnama = $data['nama'];
+      $vgambar = $data['gambar'];
+      $vtanggal = $data['tanggal'];
+      $vlokasi = $data['lokasi'];
+      $vdesk = $data['desk'];
+    }
+  }
+}
+
+if(isset($_POST['simpan'])){
+  if($_GET['hal'] == "edit"){
+    $query = "UPDATE datalaporan  SET 
+    
+      nama = '$_POST[nama]',
+      gambar = '$_POST[gambar]',
+      tanggal = '$_POST[tanggal]',
+      lokasi = '$_POST[lokasi]',
+      desk = '$_POST[desk]'
+
+    ";
+    $result = mysqli_query($conn, $query);
+
+    if($result){
+      echo "<script>
+      alert('Data Berhasil disimpan');
+    window.location.href = 'index.php';
+      </script>";
+    }
+    else{
+      echo "<script>
+      alert('Data Gagal disimpan: " . mysqli_error($conn) . "');
+    window.location.href = 'index.php';
+
+      </script>";
+    }
+  }
+
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -117,15 +169,21 @@ if(isset($_GET['hal'])){
             </div>
             <div class="flex justify-end">
               <h1 class="text-white"><?= $data['nama']?></h1>
+              <a href="index.php?hal=edit&id=<?=$data['id']?>"   class="absolute right-16 text-white">
+                <button>
+
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                  </svg>
+                </button>
+              </a>
+
               <a href="index.php?hal=hapus&id=<?=$data['id']?>" class="absolute right-8 text-white">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
               </svg>
               </a>
             </div>
-            </div>
-            <div class="w-full h-64">
-              <img class="w-full h-64 object-cover rounded-md" src="<?= $data['gambar'] ?>" alt="">
             </div>
             <div class="text-white gap-3 flex flex-col mt-2">
               <p><?= $data['desk']?></p>
@@ -135,6 +193,9 @@ if(isset($_GET['hal'])){
                   <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
                 </svg>
                 <a href="#"><?= $data['lokasi']?></a>
+              </div>
+              <div class="w-full h-64">
+                <img class="w-full h-64 object-cover rounded-md" src="<?= $data['gambar'] ?>" alt="foto sampah`">
               </div>
               <div class="flex justify-end">
                 <p>Di posting pada tanggal : <?= $data['tanggal'] ?> </p>
@@ -148,7 +209,6 @@ if(isset($_GET['hal'])){
 
 
 
-<!-- Main modal -->
 
 
 
@@ -204,7 +264,61 @@ if(isset($_GET['hal'])){
 </div> 
 
 
+<!-- Main modal -->
+<div id="edit-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    Edit Laporan !
+                </h3>
+                <button id="close-modal" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="edit-modal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <form class="p-4 md:p-5" method="post">
+                <div class="grid gap-4 mb-4 grid-cols-2">
+                    <div class="col-span-2">
+                        <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama</label>
+                        <input type="text" name="nama" id="name" value="<?=$vnama?>" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Nama Pelapor" required="">
+                    </div>
+                    <div class="col-span-2">
+                        <label for="gambar" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Gambar</label>
+                        <input type="text" name="gambar" value="<?=$vgambar?>" id="gambar" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Masukkan Foto" required="">
+                    </div>
+                    <div class="col-span-2 sm:col-span-1">
+                        <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tanggal</label>
+                        <input type="date" name="tanggal" id="price" value="<?=$vtanggal?>" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="$2999" required="">
+                    </div>
+                    <div class="col-span-2 sm:col-span-1">
+                        <label for="lokasi" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Lokasi</label>
+                        <input type="text" name="lokasi" id="lokasi" value="<?=$vlokasi?>" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Lokasi Sampah" required="">
+                    </div>
+                    <div class="col-span-2">
+                        <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Deskripsi</label>
+                        <textarea id="description" name="desk" rows="4"  class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Deskripsi"><?=$vdesk?></textarea>                    
+                    </div>
+                </div>
+                <button type="submit" name="simpan" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mr-1">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                </svg>
+                    Simpan
+                </button>
+            </form>
+        </div>
+    </div>
+</div> 
+
+
 </body>
 <script src="main.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js"></script>
+
 </html>
