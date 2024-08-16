@@ -21,7 +21,7 @@
     <!-- Form -->
 
     <div class="flex justify-center items-center mt-52">
-        <div class="bg-white/20 backdrop-blur-2xl lg:w-1/4 md:w-80 sm:w-96 h-96 rounded-lg text-white">
+        <div class="bg-white/20 backdrop-blur-2xl lg:w-1/4 md:w-80 sm:w-96 h-auto rounded-lg text-white">
             <div class="p-8">
                 <form action="" method="post">
                     <h1 class="text-2xl font-semibold text-center mb-4">Form Registrasi</h1>
