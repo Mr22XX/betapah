@@ -1,7 +1,7 @@
 # BeTaPah (Bengkulu Tanpa Sampah)
 Complaint Place for Areas with lots of garbage, to raise public awareness of the importance of keeping the environment clean and comfortable.
 
-## Dibuat dengan bahasa: 
+## Created with: 
 JS dan PHP
 
 ### Tools 
