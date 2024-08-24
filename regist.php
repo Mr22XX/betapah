@@ -1,7 +1,10 @@
 <?php
-
+session_start();
 include "conn.php";
-
+if(isset($_SESSION['login'])){
+    header("Location:index.php");
+    exit;
+}
 
 
 
@@ -21,7 +24,7 @@ if(isset($_POST['regist'])){
             </script>
             ";
             return false;
-        } else{
+        } else if($username && $password && $password2 != ""){
 
             $password = password_hash($password, PASSWORD_DEFAULT);
             $query = "INSERT INTO user (username, password) VALUES ('$username', '$password')";  
@@ -31,8 +34,10 @@ if(isset($_POST['regist'])){
                     echo "
                     <script>
                     alert('Registrasi Berhasil')
+                    window.location.href = 'login.php'
                     </script>
                     ";
+                    
                 } else {
                     echo "
                     <script>
@@ -40,6 +45,13 @@ if(isset($_POST['regist'])){
                     </script>
                     ";
                 }
+            }
+            else{
+                echo "
+                <script>
+                alert('Data tidak boleh kosong')
+                </script>
+                ";
             }
         }
         else{
@@ -93,7 +105,8 @@ if(isset($_POST['regist'])){
                     <input type="password" name="password" class="rounded-sm border-0 bg-transparent border-b-2 border-indigo-600 focus:outline-none focus:ring-0  w-full">
                     <label for="password2" class="block m-2">Konfirmasi Password</label>
                     <input type="password" name="password2" class="rounded-sm border-0 bg-transparent border-b-2 border-indigo-600 focus:outline-none focus:ring-0  w-full">
-                    <div class="flex justify-end p-5">
+                    <div class="flex justify-end p-5 items-center gap-3">
+                        <a href="login.php" class="text-indigo-600 underline">Login here</a>
                         <button type="submit" name="regist" class="bg-indigo-600 h-10 w-16 rounded-md ">Daftar</button>
                     </div>
                 </form>
