@@ -21,23 +21,25 @@ if(isset($_POST['regist'])){
             </script>
             ";
             return false;
-        }
-        $password = password_hash($password, PASSWORD_DEFAULT);
-        $query = "INSERT INTO user (username, password) VALUES ('$username', '$password')";  
-        $hasil = mysqli_query($conn, $query);
+        } else{
 
-            if($hasil){
-                echo "
-                <script>
-                alert('Registrasi Berhasil')
-                </script>
-                ";
-            } else {
-                echo "
-                <script>
-                alert('Registrasi Gagal')
-                </script>
-                ";
+            $password = password_hash($password, PASSWORD_DEFAULT);
+            $query = "INSERT INTO user (username, password) VALUES ('$username', '$password')";  
+            $hasil = mysqli_query($conn, $query);
+    
+                if($hasil){
+                    echo "
+                    <script>
+                    alert('Registrasi Berhasil')
+                    </script>
+                    ";
+                } else {
+                    echo "
+                    <script>
+                    alert('Registrasi Gagal')
+                    </script>
+                    ";
+                }
             }
         }
         else{
