@@ -1,5 +1,5 @@
 # BeTaPah (Bengkulu Tanpa Sampah)
-Tempat Pengaduan Wilayah yang banyak sampah, untuk menyadarkan masyarakat bahwa pentingnya menjaga lingkungan untuk tetap bersih dan nyaman.
+Complaint Place for Areas with lots of garbage, to raise public awareness of the importance of keeping the environment clean and comfortable.
 
 ## Dibuat dengan bahasa: 
 JS dan PHP
